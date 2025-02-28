@@ -1,4 +1,5 @@
 import { SpriteRenderer } from "./spriteRenderer.js";
+import { World } from "../world/worldContainer.js";
 export class MainRenderer {
 
   /**
@@ -8,7 +9,19 @@ export class MainRenderer {
   constructor(frame_rate) {
     this.MAX_FRAME_RATE = frame_rate;
     this.canvas = document.getElementById("canvas");
+    this.set_context_attributes();
     this.sprite_renderer = new SpriteRenderer("character_sprites", this.canvas);
+    this.world = new World(this.context, 0, 0);
+    this.world.add_item(50, 100);
+  }
+
+  /**
+   * Declares attributes related to the HTML canvas context.
+   */
+  set_context_attributes() {
+    this.context = this.canvas.getContext("2d");
+    this.context.imageSmoothingEnabled = false;
+    this.context.imageSmoothingQuality = "low";
   }
 
   /**
@@ -16,7 +29,7 @@ export class MainRenderer {
    */
   update_canvas_viewport() {
     this.clear_canvas();
-    this.sprite_renderer.drawSprite();
+    this.render_frame();
   }
 
   /**
@@ -32,9 +45,6 @@ export class MainRenderer {
    * interval task that will repeat the render task each frame.
    */
   start_rendering() {
-    this.context = this.canvas.getContext("2d");
-    this.context.imageSmoothingEnabled = false;
-    this.context.imageSmoothingQuality = "low";
     this.initiate_resolution();
     setInterval(
       this.update_canvas_viewport.bind(this),
@@ -73,5 +83,10 @@ export class MainRenderer {
     this.context.scale(scale_factor, scale_factor);
 
     this.context.putImageData(old_image, 0, 0);
+  }
+
+  render_frame() {
+    this.sprite_renderer.drawSprite();
+    this.world.draw_all_items();
   }
 }
