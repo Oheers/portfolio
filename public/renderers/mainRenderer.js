@@ -1,4 +1,4 @@
-import { SpriteRenderer } from "./spriteRenderer.js";
+import { Sprite, SpriteRenderer } from "./spriteRenderer.js";
 import { World } from "../world/worldContainer.js";
 import { MovementEventHandler } from "../interaction/movement.js";
 export class MainRenderer {
@@ -11,9 +11,11 @@ export class MainRenderer {
     this.canvas = document.getElementById("canvas");
     this.set_context_attributes();
     this.sprite_renderer = new SpriteRenderer("character_sprites", this.canvas);
+    this.sprite = this.build_player_sprite();
+    this.sprite_renderer.add_sprite(this.sprite);
     this.world = new World(this.context, 0, 0);
-    this.world.add_item(50, 100);
-    this.event_movement = new MovementEventHandler(this.world);
+    this.world.add_item(0, 0);
+    this.event_movement = new MovementEventHandler(this.world, this.sprite);
   }
 
   /**
@@ -59,7 +61,31 @@ export class MainRenderer {
    */
   initiate_resolution() {
     this.adjust_canvas_resolution();
-    window.addEventListener("resize", this.adjust_canvas_resolution);
+    window.addEventListener("resize", this.adjust_canvas_resolution.bind(this));
+  }
+
+  /**
+   * Creates the sprite to represent the client's game character. It also sets all the animation data.
+   *
+   * @returns {Sprite} A sprite instance to represent the player's character.
+   */
+  build_player_sprite() {
+    const sprite = new Sprite(
+      this.sprite_renderer.sprite_file,
+      this.canvas,
+      288,
+      38,
+      16,
+      26,
+      3,
+    );
+    sprite.add_animation("idle", 5, 288, 38, 0.25);
+    sprite.add_animation("walk_s", 5, 288, 70, 0.25);
+    sprite.add_animation("walk_n", 5, 96, 70, 0.25);
+    sprite.add_animation("walk_e", 5, 0, 70, 0.25);
+    sprite.add_animation("walk_w", 5, 193, 70, 0.25);
+    sprite.set_animation("idle");
+    return sprite;
   }
 
   /**
@@ -88,7 +114,7 @@ export class MainRenderer {
   }
 
   render_frame() {
-    this.sprite_renderer.drawSprite();
     this.world.draw_all_items();
+    this.sprite_renderer.draw_sprite();
   }
 }

@@ -3,20 +3,27 @@ export class MovementEventHandler {
    * Handles all movement for the player, and accesses the client's world to make changes to the player location based
    * on their input.
    *
-   * @param world An instance of the client's world.
+   * @param world {World} An instance of the client's world.
+   * @param sprite {Sprite} An instance of the player's sprite to be animated.
    */
-  constructor(world) {
+  constructor(world, sprite) {
     this.world = world;
+    this.sprite = sprite;
     this.keys = {};
     this.init();
+
+    this.movingKeys = ["KeyW", "KeyA", "KeyS", "KeyD"];
   }
 
   /**
    * Sets up the event listeners to detect player keyboard input.
    */
   init() {
-    window.addEventListener("keydown", (e) => (this.keys[e.key] = true));
-    window.addEventListener("keyup", (e) => (this.keys[e.key] = false));
+    window.addEventListener("keydown", (e) => (this.keys[e.code] = true));
+    window.addEventListener("keyup", (e) => {
+      this.keys[e.code] = false;
+      this.check_all_movement();
+    });
   }
 
   /**
@@ -32,19 +39,42 @@ export class MovementEventHandler {
   }
 
   /**
-   * Checks all WASD keys for input movement and applies it to the world.
+   * Checks for all keys pressed (W, A, S, D), if none are pressed then this will cause the sprite to be put back into
+   * its idle animation.
+   */
+  check_all_movement() {
+    if (!this.movingKeys.some((key) => this.keys[key])) {
+      this.sprite.set_animation("idle");
+    }
+  }
+
+  /**
+   * Applies the animations to the main character sprite depending on the direction they're moving.
+   *
+   * @param dx The player's inputted change in x.
+   * @param dy The player's inputted change in y.
+   */
+  handle_animation(dx, dy) {
+    if (dx || dy) {
+      // Generates either "n/e/s/w" for the direction the player is moving in.
+      const direction = dy < 0 ? "s" : dy > 0 ? "n" : dx > 0 ? "e" : "w";
+      this.sprite.set_animation(`walk_${direction}`);
+    }
+  }
+
+  /**
+   * Checks all WASD keys for input movement and applies it to the world, also checking if the ShiftLeft key has been
+   * pressed to let the user sprint.
    */
   action_pressed_keys() {
-    if (this.is_key_pressed("w")) {
-      this.world.transform_world(0, 1);
-    } else if (this.is_key_pressed("s")) {
-      this.world.transform_world(0, -1);
-    }
+    const move_speed = this.is_key_pressed("ShiftLeft") ? 1.5 : 1;
+    const dx =
+      (this.is_key_pressed("KeyD") - this.is_key_pressed("KeyA")) * move_speed;
+    const dy =
+      (this.is_key_pressed("KeyW") - this.is_key_pressed("KeyS")) * move_speed;
 
-    if (this.is_key_pressed("a")) {
-      this.world.transform_world(-1, 0);
-    } else if (this.is_key_pressed("d")) {
-      this.world.transform_world(1, 0);
-    }
+    this.handle_animation(dx, dy);
+
+    if (dx || dy) this.world.transform_world(dx, dy);
   }
 }

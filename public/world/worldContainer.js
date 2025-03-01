@@ -67,7 +67,12 @@ class Item {
    */
   draw(context, player_x, player_y) {
     context.beginPath(); // Start a new path
-    context.rect(this.x - player_x, this.y + player_y, 150, 100); // Add a rectangle to the current path
+    context.rect(
+      this.x - player_x + window.innerWidth / 2,
+      this.y + player_y + window.innerHeight / 2,
+      150,
+      100,
+    ); // Add a rectangle to the current path
     context.fill(); // Render the path
   }
 }
