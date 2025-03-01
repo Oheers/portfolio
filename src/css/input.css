@@ -1,3 +1,5 @@
 @import "tailwindcss";
 
-.rendering-pixelated { image-rendering: pixelated; }
+.rendering-pixelated {
+  image-rendering: pixelated;
+}

@@ -1,7 +1,7 @@
 import { SpriteRenderer } from "./spriteRenderer.js";
 import { World } from "../world/worldContainer.js";
+import { MovementEventHandler } from "../interaction/movement.js";
 export class MainRenderer {
-
   /**
    * Builds the renderer class, creating an accessible instance of the canvas and declaring a sprite renderer.
    * @param frame_rate The number of times to refresh the canvas with updated game content.
@@ -13,6 +13,7 @@ export class MainRenderer {
     this.sprite_renderer = new SpriteRenderer("character_sprites", this.canvas);
     this.world = new World(this.context, 0, 0);
     this.world.add_item(50, 100);
+    this.event_movement = new MovementEventHandler(this.world);
   }
 
   /**
@@ -28,6 +29,7 @@ export class MainRenderer {
    * Clears the canvas and re-draws an updated version of the screen.
    */
   update_canvas_viewport() {
+    this.event_movement.action_pressed_keys();
     this.clear_canvas();
     this.render_frame();
   }
@@ -56,8 +58,8 @@ export class MainRenderer {
    * Sets the initial canvas resolution and attaches an event listener to rescale the window on resize.
    */
   initiate_resolution() {
-    this.adjust_canvas_resolution()
-    window.addEventListener('resize', this.adjust_canvas_resolution);
+    this.adjust_canvas_resolution();
+    window.addEventListener("resize", this.adjust_canvas_resolution);
   }
 
   /**
