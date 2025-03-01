@@ -4,13 +4,18 @@
     <meta charset="UTF-8" />
     <title>Ed Ratner-Nunn</title>
     <link rel="stylesheet" href="/output.css" />
-    <script src="/renderers/mainRenderer.js"></script>
-    <script src="/controller.js"></script>
+    <script type="module" src="/controller.js"></script>
   </head>
   <body>
+    <img
+      src="/sprites.png"
+      class="hidden"
+      alt="Sprite file for the game."
+      id="character_sprites"
+    />
     <canvas
       id="canvas"
-      class="absolute bg-blue-300 top-0 left-0 w-full h-full"
+      class="absolute top-0 left-0 rendering-pixelated"
     ></canvas>
   </body>
 </html>

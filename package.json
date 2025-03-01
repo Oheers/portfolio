@@ -4,7 +4,8 @@
   "description": "",
   "main": "app.js",
   "scripts": {
-    "test": "eslint && npx prettier . --check"
+    "test": "eslint && npx prettier . --check",
+    "start": "node src/js/server.js"
   },
   "type": "module",
   "author": "Ed Ratner-Nunn",
